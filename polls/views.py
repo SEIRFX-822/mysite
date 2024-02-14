@@ -59,6 +59,7 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -95,7 +96,7 @@ def login_view(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect(f'/user/{u}')
+                    return HttpResponseRedirect(f'/users/{u}')
                 else:
                     print(f'{u} - account has been disabled')
                     return HttpResponseRedirect('/login')
@@ -124,3 +125,8 @@ def signup_view(request):
     else:
         form = UserCreationForm()
         return render(request, 'signup.html', { 'form': form })
+
+@login_required
+def profile(request, username):
+    user = User.objects.get(username=username)
+    return render(request, 'profile.html', { 'user': user })
