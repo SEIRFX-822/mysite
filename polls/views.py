@@ -84,5 +84,13 @@ def vote(request, question_id):
 def home(request):
     return render(request, "home.html")
 
-def login(request):
+def login_view(request):
     """how we login to our app"""
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            u = form.cleaned_data['username']
+            p = form.cleaned_data['password']
+            user = authenticate(username=u, password=p)
+            if user is not None:
+                pass
