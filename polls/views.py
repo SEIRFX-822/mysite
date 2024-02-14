@@ -93,4 +93,17 @@ def login_view(request):
             p = form.cleaned_data['password']
             user = authenticate(username=u, password=p)
             if user is not None:
-                pass
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(f'/user/{u}')
+                else:
+                    print(f'{u} - account has been disabled')
+                    return HttpResponseRedirect('/login')
+            else:
+                print('The username and/or password is incorrect')
+                return HttpResponseRedirect('/login')
+        else:
+            return HttpResponseRedirect('/login')
+    else:
+        form = AuthenticationForm()
+        return render(request, 'login.html', { 'form': form })
