@@ -9,6 +9,14 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
+# imports for authentication
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+
 # Create your views here.
 # views = routes
 # def index(request):
@@ -72,3 +80,9 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+    
+def home(request):
+    return render(request, "home.html")
+
+def login(request):
+    """how we login to our app"""
