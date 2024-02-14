@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>{{ username }}'s questions:</h1>
+
+{% for q in questions %}
+<a href="/polls/{{ q.id }}">
+  <h3>{{ q.question_text }}</h3>
+</a>
+
+{% endfor %}
+
+{% endblock %}

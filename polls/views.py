@@ -1,4 +1,3 @@
-from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -8,6 +7,14 @@ from .models import Question, Choice
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+
+
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
+# ...and add the following line...
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 # views = routes
@@ -72,3 +79,52 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+
+def signup_view(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect('/polls')
+        else:
+          return render(request, 'signup.html', {'form': form })
+    else:
+        form = UserCreationForm()
+        return render(request, 'signup.html', {'form': form })
+    
+def login_view(request):
+     # if post, then authenticate (user submitted username and password)
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            u = form.cleaned_data['username']
+            p = form.cleaned_data['password']
+            user = authenticate(username = u, password = p)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(f'/user/{u}')
+                else:
+                    print('The account has been disabled.')
+                    return HttpResponseRedirect('/login')
+        else:
+            print('The username and/or password is incorrect.')
+            return HttpResponseRedirect('/login')
+    else: # it was a get request so send the emtpy login form
+        form = AuthenticationForm()
+        return render(request, 'login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('/polls')
+
+@login_required
+def profile(request, username):
+    user = User.objects.get(username=username)
+    questions = Question.objects.all()
+    return render(request, 'profile.html', {'user': user, 'username': username, 'questions': questions})
+
+def homepage(request):
+    return render(request, "homepage.html")
