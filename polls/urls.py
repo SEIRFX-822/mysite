@@ -13,5 +13,7 @@ urlpatterns = [
     path("polls/<int:pk>/results/", views.ResultsView.as_view(), name="results"),
     # ex: /polls/5/vote
     path("polls/<int:question_id>/vote/", views.vote, name="vote"),
-    path('login/', views.login_view, name="login")
+    path('login/', views.login_view, name="login"),
+    path('logout/', views.logout_view, name="logout"),
+    path('signup/', views.signup_view, name="signup")
 ]
